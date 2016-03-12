@@ -81,14 +81,14 @@ void AnswerClient(unsigned char *msg) {
         case 0x02:      //binary frame
             break;
         case 0x08:      //connection close
-            flags.KEYFOUND = 0;
-            flags.SOCKETCONNECT = 0;
+                        //total reset
+            flags.value = 0;
             _LATB0 = 0;
             _LATB1 = 0;
             _LATB2 = 0;
-            i2c_reg_map[i2c_reg_addr++] = 0xff;     //specific for rpi2b0 tcpip_i2c -> disconnect socket
-            i2c_reg_map[i2c_reg_addr++] = 0x01;
-            //i2c_reg_addr = 0;
+            //i2c_reg_map[i2c_reg_addr++] = 0xff;     //specific for rpi2b0 tcpip_i2c -> disconnect socket
+            //i2c_reg_map[i2c_reg_addr++] = 0x01;
+            i2c_reg_addr = 0;
             break;
         case 0x09:      //ping
             break;
