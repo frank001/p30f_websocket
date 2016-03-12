@@ -36,9 +36,11 @@ void AnswerClient(unsigned char *msg) {
     
     unsigned char i;
     
-    wsByteCount = 0;
-    wsFrame.value = msg[wsByteCount++];      
+    //wsByteCount = 0;
+    wsFrame.value = msg[0];      
 
+    for (i=0;i<255;i++) i2c_reg_map[i]=0; //debugging, clear the register 
+    
     i2c_reg_addr=0;                 //we're gonna write, so set the pointer to zero
     
     switch (msg[0] & 0x0f) {    //opcode
@@ -73,21 +75,24 @@ void AnswerClient(unsigned char *msg) {
             } else {
                 //TODO: check for mask. frames from clients should be masked otherwise disconnect.
             }
-            i2c_reg_map[i2c_reg_addr] = 0;
-            wsByteCount=0;
+            //i2c_reg_map[i2c_reg_addr] = 0;
+            
             break;
         case 0x02:      //binary frame
             break;
         case 0x08:      //connection close
             flags.KEYFOUND = 0;
             flags.SOCKETCONNECT = 0;
+            _LATB0 = 0;
+            _LATB1 = 0;
+            _LATB2 = 0;
             i2c_reg_map[i2c_reg_addr++] = 0xff;     //specific for rpi2b0 tcpip_i2c -> disconnect socket
+            i2c_reg_map[i2c_reg_addr++] = 0x01;
+            //i2c_reg_addr = 0;
             break;
         case 0x09:      //ping
             break;
         case 0x0a:      //pong
-                _LATB2 = 1;
-                _LATB2 = 0;
             break;
         default:        //reserved
             break;
@@ -95,7 +100,7 @@ void AnswerClient(unsigned char *msg) {
     }
     //i2c_reg_map[i2c_reg_addr] = 0;      //terminate, specific for rpi2b0 tcpipd_i2c
     wsByteCount=0;                      //set the web socket read pointer to zero
-    payloadlen = sizeof(wsData);
+    payloadlen = 0;
     
 }
 
@@ -104,13 +109,14 @@ void ReadClient(unsigned char i2c_rcv) {
         GetClientKeyIdent(i2c_rcv);
     } else {
         //read until null char received      //this is wrong! check payload length
-        
-        if (i2c_rcv!=0x00) {                 //here's the web socket frame! TODO: watch for payload length and figure out when the client has finished writing
-        //if (wsByteCount==2) payloadlen = i2c_rcv & 0x7f;
-        //if (wsByteCount<(payloadlen)) {
+        _LATB1 = 1;
+        //if (i2c_rcv!=0x00) {                 //here's the web socket frame! TODO: watch for payload length and figure out when the client has finished writing
+        if (wsByteCount==1) payloadlen = i2c_rcv & 0x7f;
+        if (wsByteCount<(payloadlen+5)) {
             wsData[wsByteCount++]=i2c_rcv;
         } else {        //we've got all of it. now analyze the frame
             _LATB2 = 1;
+            wsData[wsByteCount++]=i2c_rcv;
             AnswerClient(wsData);
         }
     }
@@ -118,7 +124,7 @@ void ReadClient(unsigned char i2c_rcv) {
 
 void GetClientKeyIdent(unsigned char i2c_rcv) {
     if (!flags.KEYFOUND) {
-        _LATB2 = 0;
+        
         //lets see if we find a client web-socket key identification string
         if (i2c_rcv==WebSocketKeyIdent[keycntr]) {
             keycntr++;
@@ -142,13 +148,14 @@ void GetClientKeyIdent(unsigned char i2c_rcv) {
                 //we've got the key! now hash it and reply!
                 //but no too fast! wait for the client to finish his write...
                 //watch for CRLF CRLF, we have not yet switched protocols so HTTP still applies
+                _LATB0 = 1;
             }
             keycntr++;
         }
         //watch for CRLF CRLF
         if (i2c_rcv==0x0d || i2c_rcv ==0x0a) { 
             cntrCRLF++;
-            if (cntrCRLF==3) Handshake();  
+            if (cntrCRLF==4) Handshake();
         } else if (cntrCRLF>0) cntrCRLF=0;
     }
     
@@ -185,13 +192,17 @@ void Handshake(void) {
     //i2c_reg_addr-=12;
     //i2c_reg_addr=sizeof(ServerReply)+sizeof(ResultBase64);
     //we need to comply to HTTP protocol so twice CRLF it is.
+    
     i2c_reg_map[i2c_reg_addr++] = 0x0d;
     i2c_reg_map[i2c_reg_addr++] = 0x0a;
     i2c_reg_map[i2c_reg_addr++] = 0x0d;
     i2c_reg_map[i2c_reg_addr++] = 0x0a;
-    i2c_reg_map[i2c_reg_addr] = 0x00;
+    i2c_reg_addr++;
+    //i2c_reg_map[i2c_reg_addr] = 0x79;
     //for (i=0;i<32;i++) i2c_reg_map[i2c_reg_addr++] = 0xff;
     flags.SOCKETCONNECT = 1;
+    wsByteCount=0;
+    cntrCRLF = 0;
     
     
     
