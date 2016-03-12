@@ -67,22 +67,24 @@ int main(void) {
     _T1IP = 1;            // Set Timer 1 interrupt priority
     _T1IF = 0;            // Clear Timer 1 interrupt flag
     _T1IE = 1;            // Enable Timer 1 interrupt
-    T1CONbits.TON = 1;    // Turn on Timer 1
+    //T1CONbits.TON = 1;    // Turn on Timer 1
 
     
     TRISB = 0;
     //LATBbits.LATB1= 1;
     
     while(1) {
-        _LATB2 = flags.SOCKETCONNECT;
         if (flags.SOCKETCONNECT && !bitflip) {
             //AnswerClient(&test);              //this won't work as rpi2b0 tcp_ip is not improved (it is not listening to the i2c port, only to tcpip)
-            
         }
+        
+        /*//
         _LATB0 = 1;
         delay(75);
         _LATB0 = 0;
+        //*/
         delay(75);
+         
     }
     return 0;
 }

@@ -1,4 +1,4 @@
-Microchip Technology Inc, vv3_31 (A) ~
+Microchip Technology Inc, vv3_31 (A) k
 
 Tool Name:
   c:\program files (x86)\microchip\mplab c30\bin\bin\..\bin/pic30-elf-ld.exe
@@ -51,11 +51,11 @@ section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x100                0x94            0xde  (222)
 .const                       0x194               0x14a           0x1ef  (495)
-.text                        0x2de               0xf32          0x16cb  (5835)
-.dinit                      0x1210                0xa4            0xf6  (246)
-.init.delay32               0x12b4                0x1c            0x2a  (42)
+.text                        0x2de               0xedc          0x164a  (5706)
+.dinit                      0x11ba                0xa4            0xf6  (246)
+.init.delay32               0x125e                0x1c            0x2a  (42)
 
-                     Total program memory used (bytes):         0x1ab8  (6840) 14%
+                     Total program memory used (bytes):         0x1a37  (6711) 13%
 
 
 Data Memory  [Origin = 0x800, Length = 0x800]
@@ -127,8 +127,8 @@ External Symbols in Program Memory (by address):
 
                   0x000100                  __resetPRI
                   0x000122                  __psv_init
-                  0x000132                  __data_init
                   0x000132                  __data_init_standard
+                  0x000132                  __data_init
                   0x000190                  __DefaultInterrupt
                   0x0002de                  _SHA1Initialize
                   0x000324                  _SHA1AddData
@@ -138,44 +138,46 @@ External Symbols in Program Memory (by address):
                   0x000c02                  _Base64encode_len
                   0x000c16                  _Base64encode
                   0x000d82                  _ResetFlags
-                  0x000d8c                  _AnswerClient
-                  0x000ec2                  _ReadClient
-                  0x000ef4                  _GetClientKeyIdent
-                  0x000f78                  _Handshake
-                  0x001032                  __T1Interrupt
-                  0x00106a                  __SI2CInterrupt
-                  0x001146                  _delay
-                  0x00116c                  _I2C_initialize
-                  0x0011ae                  _main
-                  0x0012b4                  ___delay32
+                  0x000d8c                  _ReadClient
+                  0x000de6                  _GetClientKeyIdent
+                  0x000e70                  _Handshake
+                  0x000f28                  _AnswerClient
+                  0x001022                  __T1Interrupt
+                  0x001036                  __SI2CInterrupt
+                  0x001112                  _delay
+                  0x001138                  _I2C_initialize
+                  0x00117a                  _main
+                  0x00125e                  ___delay32
                   0xf80000                  _FOSC
+                  0xf80002                  _FWDT
 
 External Symbols in Program Memory (by name):
 
-                  0x000d8c                  _AnswerClient
+                  0x000f28                  _AnswerClient
                   0x000a72                  _Base64decode
                   0x000a2c                  _Base64decode_len
                   0x000c16                  _Base64encode
                   0x000c02                  _Base64encode_len
                   0xf80000                  _FOSC
-                  0x000ef4                  _GetClientKeyIdent
-                  0x000f78                  _Handshake
-                  0x00116c                  _I2C_initialize
-                  0x000ec2                  _ReadClient
+                  0xf80002                  _FWDT
+                  0x000de6                  _GetClientKeyIdent
+                  0x000e70                  _Handshake
+                  0x001138                  _I2C_initialize
+                  0x000d8c                  _ReadClient
                   0x000d82                  _ResetFlags
                   0x000324                  _SHA1AddData
                   0x0007aa                  _SHA1Calculate
                   0x0002de                  _SHA1Initialize
                   0x000190                  __DefaultInterrupt
-                  0x00106a                  __SI2CInterrupt
-                  0x001032                  __T1Interrupt
-                  0x0012b4                  ___delay32
+                  0x001036                  __SI2CInterrupt
+                  0x001022                  __T1Interrupt
+                  0x00125e                  ___delay32
                   0x000132                  __data_init
                   0x000132                  __data_init_standard
                   0x000122                  __psv_init
                   0x000100                  __resetPRI
-                  0x001146                  _delay
-                  0x0011ae                  _main
+                  0x001112                  _delay
+                  0x00117a                  _main
 
 Memory Configuration
 
@@ -299,13 +301,13 @@ userdata
 .comment
  *(.comment)
 
-.debug_info       0x000000       0x2b1b
+.debug_info       0x000000       0x28a2
  *(.debug_info)
- .debug_info      0x000000        0xf8d build/default/production/main.o
- .debug_info      0x000f8d        0xa10 build/default/production/interrupt.o
- .debug_info      0x00199d        0x74a build/default/production/sha1.o
- .debug_info      0x0020e7        0x2cb build/default/production/base64.o
- .debug_info      0x0023b2        0x769 build/default/production/websocket.o
+ .debug_info      0x000000        0xe5a build/default/production/main.o
+ .debug_info      0x000e5a        0x8ca build/default/production/interrupt.o
+ .debug_info      0x001724        0x74a build/default/production/sha1.o
+ .debug_info      0x001e6e        0x2cb build/default/production/base64.o
+ .debug_info      0x002139        0x769 build/default/production/websocket.o
  *(.gnu.linkonce.wi.*)
 
 .debug_abbrev     0x000000        0x637
@@ -316,13 +318,13 @@ userdata
  .debug_abbrev    0x00040f         0xa1 build/default/production/base64.o
  .debug_abbrev    0x0004b0        0x187 build/default/production/websocket.o
 
-.debug_line       0x000000        0xdb2
+.debug_line       0x000000        0xd7a
  *(.debug_line)
- .debug_line      0x000000        0x26d build/default/production/main.o
- .debug_line      0x00026d        0x1b8 build/default/production/interrupt.o
- .debug_line      0x000425        0x43e build/default/production/sha1.o
- .debug_line      0x000863        0x227 build/default/production/base64.o
- .debug_line      0x000a8a        0x328 build/default/production/websocket.o
+ .debug_line      0x000000        0x245 build/default/production/main.o
+ .debug_line      0x000245        0x1b0 build/default/production/interrupt.o
+ .debug_line      0x0003f5        0x43e build/default/production/sha1.o
+ .debug_line      0x000833        0x227 build/default/production/base64.o
+ .debug_line      0x000a5a        0x320 build/default/production/websocket.o
 
 .debug_frame      0x000000        0x193
  *(.debug_frame)
@@ -347,18 +349,18 @@ userdata
  *(.debug_macinfo)
 
 .debug_pubnames
-                  0x000000        0x28e
+                  0x000000        0x297
  *(.debug_pubnames)
  .debug_pubnames
-                  0x000000         0x4d build/default/production/main.o
+                  0x000000         0x56 build/default/production/main.o
  .debug_pubnames
-                  0x00004d         0x91 build/default/production/interrupt.o
+                  0x000056         0x91 build/default/production/interrupt.o
  .debug_pubnames
-                  0x0000de         0x55 build/default/production/sha1.o
+                  0x0000e7         0x55 build/default/production/sha1.o
  .debug_pubnames
-                  0x000133         0x5e build/default/production/base64.o
+                  0x00013c         0x5e build/default/production/base64.o
  .debug_pubnames
-                  0x000191         0xfd build/default/production/websocket.o
+                  0x00019a         0xfd build/default/production/websocket.o
 
 .debug_ranges
  *(.debug_ranges)
@@ -388,7 +390,7 @@ userdata
                   0x000014          0x4 LONG 0x190 DEFINED (__INT0Interrupt)?ABSOLUTE (__INT0Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x000016          0x4 LONG 0x190 DEFINED (__IC1Interrupt)?ABSOLUTE (__IC1Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x000018          0x4 LONG 0x190 DEFINED (__OC1Interrupt)?ABSOLUTE (__OC1Interrupt):ABSOLUTE (__DefaultInterrupt)
-                  0x00001a          0x4 LONG 0x1032 DEFINED (__T1Interrupt)?ABSOLUTE (__T1Interrupt):ABSOLUTE (__DefaultInterrupt)
+                  0x00001a          0x4 LONG 0x1022 DEFINED (__T1Interrupt)?ABSOLUTE (__T1Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x00001c          0x4 LONG 0x190 DEFINED (__IC2Interrupt)?ABSOLUTE (__IC2Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x00001e          0x4 LONG 0x190 DEFINED (__OC2Interrupt)?ABSOLUTE (__OC2Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x000020          0x4 LONG 0x190 DEFINED (__T2Interrupt)?ABSOLUTE (__T2Interrupt):ABSOLUTE (__DefaultInterrupt)
@@ -398,7 +400,7 @@ userdata
                   0x000028          0x4 LONG 0x190 DEFINED (__U1TXInterrupt)?ABSOLUTE (__U1TXInterrupt):ABSOLUTE (__DefaultInterrupt)
                   0x00002a          0x4 LONG 0x190 DEFINED (__ADCInterrupt)?ABSOLUTE (__ADCInterrupt):ABSOLUTE (__DefaultInterrupt)
                   0x00002c          0x4 LONG 0x190 DEFINED (__NVMInterrupt)?ABSOLUTE (__NVMInterrupt):ABSOLUTE (__DefaultInterrupt)
-                  0x00002e          0x4 LONG 0x106a DEFINED (__SI2CInterrupt)?ABSOLUTE (__SI2CInterrupt):ABSOLUTE (__DefaultInterrupt)
+                  0x00002e          0x4 LONG 0x1036 DEFINED (__SI2CInterrupt)?ABSOLUTE (__SI2CInterrupt):ABSOLUTE (__DefaultInterrupt)
                   0x000030          0x4 LONG 0x190 DEFINED (__MI2CInterrupt)?ABSOLUTE (__MI2CInterrupt):ABSOLUTE (__DefaultInterrupt)
                   0x000032          0x4 LONG 0x190 DEFINED (__CNInterrupt)?ABSOLUTE (__CNInterrupt):ABSOLUTE (__DefaultInterrupt)
                   0x000034          0x4 LONG 0x190 DEFINED (__INT1Interrupt)?ABSOLUTE (__INT1Interrupt):ABSOLUTE (__DefaultInterrupt)
@@ -452,7 +454,7 @@ userdata
                   0x000094          0x4 LONG 0x190 DEFINED (__AltINT0Interrupt)?ABSOLUTE (__AltINT0Interrupt):DEFINED (__INT0Interrupt)?ABSOLUTE (__INT0Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x000096          0x4 LONG 0x190 DEFINED (__AltIC1Interrupt)?ABSOLUTE (__AltIC1Interrupt):DEFINED (__IC1Interrupt)?ABSOLUTE (__IC1Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x000098          0x4 LONG 0x190 DEFINED (__AltOC1Interrupt)?ABSOLUTE (__AltOC1Interrupt):DEFINED (__OC1Interrupt)?ABSOLUTE (__OC1Interrupt):ABSOLUTE (__DefaultInterrupt)
-                  0x00009a          0x4 LONG 0x1032 DEFINED (__AltT1Interrupt)?ABSOLUTE (__AltT1Interrupt):DEFINED (__T1Interrupt)?ABSOLUTE (__T1Interrupt):ABSOLUTE (__DefaultInterrupt)
+                  0x00009a          0x4 LONG 0x1022 DEFINED (__AltT1Interrupt)?ABSOLUTE (__AltT1Interrupt):DEFINED (__T1Interrupt)?ABSOLUTE (__T1Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x00009c          0x4 LONG 0x190 DEFINED (__AltIC2Interrupt)?ABSOLUTE (__AltIC2Interrupt):DEFINED (__IC2Interrupt)?ABSOLUTE (__IC2Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x00009e          0x4 LONG 0x190 DEFINED (__AltOC2Interrupt)?ABSOLUTE (__AltOC2Interrupt):DEFINED (__OC2Interrupt)?ABSOLUTE (__OC2Interrupt):ABSOLUTE (__DefaultInterrupt)
                   0x0000a0          0x4 LONG 0x190 DEFINED (__AltT2Interrupt)?ABSOLUTE (__AltT2Interrupt):DEFINED (__T2Interrupt)?ABSOLUTE (__T2Interrupt):ABSOLUTE (__DefaultInterrupt)
@@ -462,7 +464,7 @@ userdata
                   0x0000a8          0x4 LONG 0x190 DEFINED (__AltU1TXInterrupt)?ABSOLUTE (__AltU1TXInterrupt):DEFINED (__U1TXInterrupt)?ABSOLUTE (__U1TXInterrupt):ABSOLUTE (__DefaultInterrupt)
                   0x0000aa          0x4 LONG 0x190 DEFINED (__AltADCInterrupt)?ABSOLUTE (__AltADCInterrupt):DEFINED (__ADCInterrupt)?ABSOLUTE (__ADCInterrupt):ABSOLUTE (__DefaultInterrupt)
                   0x0000ac          0x4 LONG 0x190 DEFINED (__AltNVMInterrupt)?ABSOLUTE (__AltNVMInterrupt):DEFINED (__NVMInterrupt)?ABSOLUTE (__NVMInterrupt):ABSOLUTE (__DefaultInterrupt)
-                  0x0000ae          0x4 LONG 0x106a DEFINED (__AltSI2CInterrupt)?ABSOLUTE (__AltSI2CInterrupt):DEFINED (__SI2CInterrupt)?ABSOLUTE (__SI2CInterrupt):ABSOLUTE (__DefaultInterrupt)
+                  0x0000ae          0x4 LONG 0x1036 DEFINED (__AltSI2CInterrupt)?ABSOLUTE (__AltSI2CInterrupt):DEFINED (__SI2CInterrupt)?ABSOLUTE (__SI2CInterrupt):ABSOLUTE (__DefaultInterrupt)
                   0x0000b0          0x4 LONG 0x190 DEFINED (__AltMI2CInterrupt)?ABSOLUTE (__AltMI2CInterrupt):DEFINED (__MI2CInterrupt)?ABSOLUTE (__MI2CInterrupt):ABSOLUTE (__DefaultInterrupt)
                   0x0000b2          0x4 LONG 0x190 DEFINED (__AltCNInterrupt)?ABSOLUTE (__AltCNInterrupt):DEFINED (__CNInterrupt)?ABSOLUTE (__CNInterrupt):ABSOLUTE (__DefaultInterrupt)
                   0x0000b4          0x4 LONG 0x190 DEFINED (__AltINT1Interrupt)?ABSOLUTE (__AltINT1Interrupt):DEFINED (__INT1Interrupt)?ABSOLUTE (__INT1Interrupt):ABSOLUTE (__DefaultInterrupt)
@@ -1258,17 +1260,23 @@ __c30_signature
 .nbss               0x0b62          0x2
  .nbss              0x0b62          0x2 build/default/production/main.o
 
-_02b8154056e082c4
+_02b9f54056e3fb0b
                   0xf80000          0x2
- _02b8154056e082c4
+ _02b9f54056e3fb0b
                   0xf80000          0x2 build/default/production/main.o
                   0xf80000                  _FOSC
+
+_02b9f5b056e3fb0b
+                  0xf80002          0x2
+ _02b9f5b056e3fb0b
+                  0xf80002          0x2 build/default/production/main.o
+                  0xf80002                  _FWDT
 
 .const              0x8194        0x14a load address 0x000194  
  .const             0x8194        0x142 build/default/production/base64.o
  .const             0x82d6          0x8 build/default/production/main.o
 
-.text             0x0002de        0xf32
+.text             0x0002de        0xedc
  .text            0x0002de        0x74e build/default/production/sha1.o
                   0x0002de                  _SHA1Initialize
                   0x000324                  _SHA1AddData
@@ -1278,23 +1286,23 @@ _02b8154056e082c4
                   0x000a72                  _Base64decode
                   0x000c02                  _Base64encode_len
                   0x000c16                  _Base64encode
- .text            0x000d82        0x2b0 build/default/production/websocket.o
+ .text            0x000d82        0x2a0 build/default/production/websocket.o
                   0x000d82                  _ResetFlags
-                  0x000d8c                  _AnswerClient
-                  0x000ec2                  _ReadClient
-                  0x000ef4                  _GetClientKeyIdent
-                  0x000f78                  _Handshake
- .text            0x001032        0x114 build/default/production/interrupt.o
-                  0x001032                  __T1Interrupt
-                  0x00106a                  __SI2CInterrupt
- .text            0x001146         0xca build/default/production/main.o
-                  0x001146                  _delay
-                  0x00116c                  _I2C_initialize
-                  0x0011ae                  _main
+                  0x000d8c                  _ReadClient
+                  0x000de6                  _GetClientKeyIdent
+                  0x000e70                  _Handshake
+                  0x000f28                  _AnswerClient
+ .text            0x001022         0xf0 build/default/production/interrupt.o
+                  0x001022                  __T1Interrupt
+                  0x001036                  __SI2CInterrupt
+ .text            0x001112         0xa8 build/default/production/main.o
+                  0x001112                  _delay
+                  0x001138                  _I2C_initialize
+                  0x00117a                  _main
 
-.dinit            0x001210         0xa4
- .dinit           0x001210         0xa4 data_init
+.dinit            0x0011ba         0xa4
+ .dinit           0x0011ba         0xa4 data_init
 
-.init.delay32     0x0012b4         0x1c
- .init.delay32    0x0012b4         0x1c c:/program files (x86)/microchip/mplab c30/bin/bin/../../lib\libpic30-elf.a(delay32.eo)
-                  0x0012b4                  ___delay32
+.init.delay32     0x00125e         0x1c
+ .init.delay32    0x00125e         0x1c c:/program files (x86)/microchip/mplab c30/bin/bin/../../lib\libpic30-elf.a(delay32.eo)
+                  0x00125e                  ___delay32

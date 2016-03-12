@@ -10,7 +10,12 @@
  
 //int FOSC __attribute__((space(prog), address(0xF80000))) = 0xC703 ; //FRC w/PLL 16x, 30MHz
  int FOSC __attribute__((space(prog), address(0xF80000))) = 0xC70A ;
-//int FWDT __attribute__((space(prog), address(0xF80002))) = 0x3F ;   //watchdog timer disabled
 
+ int FWDT __attribute__((space(prog), address(0xF80002))) = 0x3F ;
+//_FWDT(
+//    WDTPSB_16 &        // WDT Prescaler B (1:16)
+//    WDTPSA_512 &       // WDT Prescaler A (1:512)
+//    WDT_OFF            // Watchdog Timer (Disabled)
+//);
 #endif	/* CONFIG_H */
 

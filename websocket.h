@@ -28,9 +28,9 @@ static Flags flags;
 
 typedef union {
     unsigned int value;
-    unsigned char OPCODE : 4;
-    unsigned char RSV : 3;
     unsigned char FIN : 1;
+    unsigned char RSV : 3;
+    unsigned char OPCODE : 4;
 } WebSocketFrame;
 
 void AnswerClient(unsigned char *);

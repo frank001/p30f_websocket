@@ -44,25 +44,14 @@ void ReadClient(unsigned char i2c_rcv) {
 
 void GetClientKeyIdent(unsigned char i2c_rcv) {
     if (!flags.KEYFOUND) {
-        
-        //lets see if we find a client web-socket key identification string
-        if (i2c_rcv==WebSocketKeyIdent[keycntr]) {
-            keycntr++;
-        }
-        //check if the key identification is still valid
-        if (keycntr==sizeof(WebSocketKeyIdent) && i2c_rcv!=WebSocketKeyIdent[keycntr]) {
-            keycntr=0;
-        }
-        //check for complete key
-        if (keycntr==sizeof(WebSocketKeyIdent)-1) {
-            //key identification found!!
+        if (i2c_rcv==WebSocketKeyIdent[keycntr]) keycntr++;                                         //lets see if we find a client web-socket key identification string
+        if (keycntr==sizeof(WebSocketKeyIdent) && i2c_rcv!=WebSocketKeyIdent[keycntr]) keycntr=0;   //check if the key identification is still valid
+        if (keycntr==sizeof(WebSocketKeyIdent)-1) {                                                 //key identification found! read the next 24 chars for the key itself.
             flags.KEYFOUND = 1;
-            //read the next 24 chars for the key itself!!!!
             keycntr = 0;
         } 
     } else {
-        //store the client key once the identification has been found
-        if (keycntr<WebSocketKeyLength) {
+        if (keycntr<WebSocketKeyLength) {                                                           //store the client key when the identification has been found
             WebSocketKey[keycntr] = i2c_rcv;
             if (keycntr==WebSocketKeyLength-1) {
                 //we've got the key! now hash it and reply!
@@ -75,7 +64,7 @@ void GetClientKeyIdent(unsigned char i2c_rcv) {
         //watch for CRLF CRLF
         if (i2c_rcv==0x0d || i2c_rcv ==0x0a) { 
             cntrCRLF++;
-            if (cntrCRLF==4) Handshake();
+            if (cntrCRLF==4) Handshake();       
         } else if (cntrCRLF>0) cntrCRLF=0;
     }
 }
@@ -101,17 +90,15 @@ void Handshake(void) {
         i2c_reg_map[i2c_reg_addr++] = ServerReply[i];
     
     //write out the hash
-    i2c_reg_addr--;
-    for (i=0;i<28;i++)                                  //28????
+    i2c_reg_addr--;                                     //why is this needed??? (null value)
+    for (i=0;i<28;i++)                                  //28???? TODO get the length from base64 encoding
         i2c_reg_map[i2c_reg_addr++] = ResultBase64[i];
    
     //we need to comply to HTTP protocol at this point so twice CRLF it is.
-    
     i2c_reg_map[i2c_reg_addr++] = 0x0d;
     i2c_reg_map[i2c_reg_addr++] = 0x0a;
     i2c_reg_map[i2c_reg_addr++] = 0x0d;
     i2c_reg_map[i2c_reg_addr++] = 0x0a;
-    i2c_reg_addr++;
     flags.SOCKETCONNECT = 1;
     wsByteCount=0;
     cntrCRLF = 0;

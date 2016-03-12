@@ -17,7 +17,7 @@ void __attribute__((__interrupt__, __auto_psv__)) _T1Interrupt(void) {
     // Clear Timer 1 interrupt flag
     _T1IF = 0;
      // Toggle LED on RB1
-    _LATB1 = 1 - _LATB1;
+    //_LATB1 = 1 - _LATB1;
 }
 
 void __attribute__((interrupt, no_auto_psv)) _SI2CInterrupt(void) {
