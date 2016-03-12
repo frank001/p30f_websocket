@@ -48,35 +48,21 @@ void AnswerClient(unsigned char *msg) {
             break;
         case 0x01:      //text frame
             if (msg[1] & 0x80) {             
-                payloadlen = msg[1] & 0x7f;  //TODO: check for payload length, limit this to minimize memory usage
+                payloadlen = msg[1] & 0x7f;     //TODO: check for payload length, limit this to minimize memory usage
                 for (i=0;i<4;i++)               //read in the mask
                     mask[i] = msg[2+i];
                 for (i=0;i<payloadlen;i++)      //decode the message
                     decoded[i] = msg[i+6]^mask[i%4];
-                    
                 //at this point we have the complete message -> invoke command handler
-                //for (i=0;i<payloadlen;i++)      //write it out for now, debugging
-                //    i2c_reg_map[i2c_reg_addr++] = decoded[i];
-                
-                
                 //echo the message back for now
-                //wsFrame.FIN = 1;
-                //wsFrame.OPCODE = 1;
-                //wsFrame.RSV = 0;
                 i2c_reg_map[i2c_reg_addr++] = 0x81;     //FIN bit high and opcode=1
                 i2c_reg_map[i2c_reg_addr++] = payloadlen;
-                //i2c_reg_map[i2c_reg_addr++] = 0x1a;
-                
                 for (i=0;i<payloadlen;i++) {
                     i2c_reg_map[i2c_reg_addr++] = decoded[i];
                 }
-                
-                
             } else {
                 //TODO: check for mask. frames from clients should be masked otherwise disconnect.
             }
-            //i2c_reg_map[i2c_reg_addr] = 0;
-            
             break;
         case 0x02:      //binary frame
             break;
@@ -86,8 +72,6 @@ void AnswerClient(unsigned char *msg) {
             _LATB0 = 0;
             _LATB1 = 0;
             _LATB2 = 0;
-            //i2c_reg_map[i2c_reg_addr++] = 0xff;     //specific for rpi2b0 tcpip_i2c -> disconnect socket
-            //i2c_reg_map[i2c_reg_addr++] = 0x01;
             i2c_reg_addr = 0;
             break;
         case 0x09:      //ping
@@ -98,7 +82,6 @@ void AnswerClient(unsigned char *msg) {
             break;
 
     }
-    //i2c_reg_map[i2c_reg_addr] = 0;      //terminate, specific for rpi2b0 tcpipd_i2c
     wsByteCount=0;                      //set the web socket read pointer to zero
     payloadlen = 0;
     
@@ -107,14 +90,12 @@ void AnswerClient(unsigned char *msg) {
 void ReadClient(unsigned char i2c_rcv) {
     if (!flags.SOCKETCONNECT) {
         GetClientKeyIdent(i2c_rcv);
-    } else {
-        //read until null char received      //this is wrong! check payload length
+    } else {                                        //here's the web socket frame! 
         _LATB1 = 1;
-        //if (i2c_rcv!=0x00) {                 //here's the web socket frame! TODO: watch for payload length and figure out when the client has finished writing
         if (wsByteCount==1) payloadlen = i2c_rcv & 0x7f;
-        if (wsByteCount<(payloadlen+5)) {
+        if (wsByteCount<(payloadlen+5)) {           //watch for payload length, wait for the client to finish the write
             wsData[wsByteCount++]=i2c_rcv;
-        } else {        //we've got all of it. now analyze the frame
+        } else {                                    //we've got all of it. now analyze the frame
             _LATB2 = 1;
             wsData[wsByteCount++]=i2c_rcv;
             AnswerClient(wsData);
