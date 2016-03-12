@@ -24,23 +24,106 @@ unsigned int payloadlen = sizeof(wsData);
 unsigned char cntrCRLF = 0;
 
 WebSocketFrame wsFrame;
-
-
-
-
 void ResetFlags(void) { flags.value = 0; }
+
+void ReadClient(unsigned char i2c_rcv) {
+    if (!flags.SOCKETCONNECT) {                     //lets see if there is a web socket identification key
+        GetClientKeyIdent(i2c_rcv);
+    } else {                                        //we're connected! here's the web socket frame.
+        _LATB1 = 1;
+        if (wsByteCount==1) payloadlen = i2c_rcv & 0x7f;
+        if (wsByteCount<(payloadlen+5)) {           //watch for payload length, wait for the client to finish the write
+            wsData[wsByteCount++]=i2c_rcv;
+        } else {                                    //we've got all of it. now analyze the frame
+            _LATB2 = 1;
+            wsData[wsByteCount++]=i2c_rcv;
+            AnswerClient(wsData);
+        }
+    }
+}
+
+void GetClientKeyIdent(unsigned char i2c_rcv) {
+    if (!flags.KEYFOUND) {
+        
+        //lets see if we find a client web-socket key identification string
+        if (i2c_rcv==WebSocketKeyIdent[keycntr]) {
+            keycntr++;
+        }
+        //check if the key identification is still valid
+        if (keycntr==sizeof(WebSocketKeyIdent) && i2c_rcv!=WebSocketKeyIdent[keycntr]) {
+            keycntr=0;
+        }
+        //check for complete key
+        if (keycntr==sizeof(WebSocketKeyIdent)-1) {
+            //key identification found!!
+            flags.KEYFOUND = 1;
+            //read the next 24 chars for the key itself!!!!
+            keycntr = 0;
+        } 
+    } else {
+        //store the client key once the identification has been found
+        if (keycntr<WebSocketKeyLength) {
+            WebSocketKey[keycntr] = i2c_rcv;
+            if (keycntr==WebSocketKeyLength-1) {
+                //we've got the key! now hash it and reply!
+                //but no too fast! wait for the client to finish his write...
+                //watch for CRLF CRLF, we have not switched protocols yet so HTTP still applies
+                _LATB0 = 1;
+            }
+            keycntr++;
+        }
+        //watch for CRLF CRLF
+        if (i2c_rcv==0x0d || i2c_rcv ==0x0a) { 
+            cntrCRLF++;
+            if (cntrCRLF==4) Handshake();
+        } else if (cntrCRLF>0) cntrCRLF=0;
+    }
+}
+
+void Handshake(void) {
+    static HASH_SUM ReplyHash;
+    char Sha1Result[20];
+    char ResultBase64[40];
+    unsigned char i;
+
+    //hash it
+    SHA1Initialize(&ReplyHash);
+    SHA1AddData(&ReplyHash,(BYTE*)WebSocketKey, WebSocketKeyLength);
+    SHA1AddData(&ReplyHash,(BYTE*)WebSocketGuid,(WORD)sizeof WebSocketGuid - 1);
+    SHA1Calculate(&ReplyHash,(BYTE*)Sha1Result);
+    
+    //Base 64 encoding
+    Base64encode(ResultBase64, Sha1Result, 20);
+    
+    //write out the reply
+    i2c_reg_addr=0;                             //we're gonna write, so set the pointer to zero
+    for (i=0;i<sizeof(ServerReply);i++) 
+        i2c_reg_map[i2c_reg_addr++] = ServerReply[i];
+    
+    //write out the hash
+    i2c_reg_addr--;
+    for (i=0;i<28;i++)                                  //28????
+        i2c_reg_map[i2c_reg_addr++] = ResultBase64[i];
+   
+    //we need to comply to HTTP protocol at this point so twice CRLF it is.
+    
+    i2c_reg_map[i2c_reg_addr++] = 0x0d;
+    i2c_reg_map[i2c_reg_addr++] = 0x0a;
+    i2c_reg_map[i2c_reg_addr++] = 0x0d;
+    i2c_reg_map[i2c_reg_addr++] = 0x0a;
+    i2c_reg_addr++;
+    flags.SOCKETCONNECT = 1;
+    wsByteCount=0;
+    cntrCRLF = 0;
+}
+
 
 void AnswerClient(unsigned char *msg) {
     unsigned char mask[4];
     char decoded[255];
-    
     unsigned char i;
     
-    //wsByteCount = 0;
     wsFrame.value = msg[0];      
-
-    for (i=0;i<255;i++) i2c_reg_map[i]=0; //debugging, clear the register 
-    
     i2c_reg_addr=0;                 //we're gonna write, so set the pointer to zero
     
     switch (msg[0] & 0x0f) {    //opcode
@@ -84,107 +167,5 @@ void AnswerClient(unsigned char *msg) {
     }
     wsByteCount=0;                      //set the web socket read pointer to zero
     payloadlen = 0;
-    
-}
-
-void ReadClient(unsigned char i2c_rcv) {
-    if (!flags.SOCKETCONNECT) {
-        GetClientKeyIdent(i2c_rcv);
-    } else {                                        //here's the web socket frame! 
-        _LATB1 = 1;
-        if (wsByteCount==1) payloadlen = i2c_rcv & 0x7f;
-        if (wsByteCount<(payloadlen+5)) {           //watch for payload length, wait for the client to finish the write
-            wsData[wsByteCount++]=i2c_rcv;
-        } else {                                    //we've got all of it. now analyze the frame
-            _LATB2 = 1;
-            wsData[wsByteCount++]=i2c_rcv;
-            AnswerClient(wsData);
-        }
-    }
-}
-
-void GetClientKeyIdent(unsigned char i2c_rcv) {
-    if (!flags.KEYFOUND) {
-        
-        //lets see if we find a client web-socket key identification string
-        if (i2c_rcv==WebSocketKeyIdent[keycntr]) {
-            keycntr++;
-        }
-        //check if the key identification is still valid
-        if (keycntr==sizeof(WebSocketKeyIdent) && i2c_rcv!=WebSocketKeyIdent[keycntr]) {
-            keycntr=0;
-        }
-        //check for complete key
-        if (keycntr==sizeof(WebSocketKeyIdent)-1) {
-            //key identification found!!
-            flags.KEYFOUND = 1;
-            //read the next 24 chars for the key itself!!!!
-            keycntr = 0;
-        } 
-    } else {
-        //store the client key once the identification has been found
-        if (keycntr<WebSocketKeyLength) {
-            WebSocketKey[keycntr] = i2c_rcv;
-            if (keycntr==WebSocketKeyLength-1) {
-                //we've got the key! now hash it and reply!
-                //but no too fast! wait for the client to finish his write...
-                //watch for CRLF CRLF, we have not yet switched protocols so HTTP still applies
-                _LATB0 = 1;
-            }
-            keycntr++;
-        }
-        //watch for CRLF CRLF
-        if (i2c_rcv==0x0d || i2c_rcv ==0x0a) { 
-            cntrCRLF++;
-            if (cntrCRLF==4) Handshake();
-        } else if (cntrCRLF>0) cntrCRLF=0;
-    }
-    
-}
-
-
-void Handshake(void) {
-    static HASH_SUM ReplyHash;
-    char Sha1Result[20];
-    char ResultBase64[40];
-    unsigned char i;
-    
-    
-    
-    //hash it
-    SHA1Initialize(&ReplyHash);
-    SHA1AddData(&ReplyHash,(BYTE*)WebSocketKey, WebSocketKeyLength);
-    SHA1AddData(&ReplyHash,(BYTE*)WebSocketGuid,(WORD)sizeof WebSocketGuid - 1);
-    SHA1Calculate(&ReplyHash,(BYTE*)Sha1Result);
-    
-    //Base 64 encoding
-    Base64encode(ResultBase64, Sha1Result, 20);
-    
-    //write out the reply
-    i2c_reg_addr=0;                             //we're gonna write, so set the pointer to zero
-    for (i=0;i<sizeof(ServerReply);i++) 
-        i2c_reg_map[i2c_reg_addr++] = ServerReply[i];
-    
-    //write out the hash
-    i2c_reg_addr--;
-    for (i=0;i<28;i++)                                  //28????
-        i2c_reg_map[i2c_reg_addr++] = ResultBase64[i];
-    
-    //i2c_reg_addr-=12;
-    //i2c_reg_addr=sizeof(ServerReply)+sizeof(ResultBase64);
-    //we need to comply to HTTP protocol so twice CRLF it is.
-    
-    i2c_reg_map[i2c_reg_addr++] = 0x0d;
-    i2c_reg_map[i2c_reg_addr++] = 0x0a;
-    i2c_reg_map[i2c_reg_addr++] = 0x0d;
-    i2c_reg_map[i2c_reg_addr++] = 0x0a;
-    i2c_reg_addr++;
-    //i2c_reg_map[i2c_reg_addr] = 0x79;
-    //for (i=0;i<32;i++) i2c_reg_map[i2c_reg_addr++] = 0xff;
-    flags.SOCKETCONNECT = 1;
-    wsByteCount=0;
-    cntrCRLF = 0;
-    
-    
     
 }
