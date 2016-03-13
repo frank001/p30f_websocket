@@ -137,12 +137,7 @@ void AnswerClient(unsigned char *msg) {
         case 0x02:      //binary frame
             break;
         case 0x08:      //connection close
-                        //total reset
-            flags.value = 0;
-            _LATB0 = 0;
-            _LATB1 = 0;
-            _LATB2 = 0;
-            i2c_reg_addr = 0;
+            asm("RESET");   //total reset
             break;
         case 0x09:      //ping
             break;
@@ -152,7 +147,7 @@ void AnswerClient(unsigned char *msg) {
             break;
 
     }
-    wsByteCount=0;                      //set the web socket read pointer to zero
+    wsByteCount = 0;                      //set the web socket read pointer to zero
     payloadlen = 0;
     
 }
