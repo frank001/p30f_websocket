@@ -3,8 +3,6 @@
 #include "interrupt.h"
 #include "websocket.h"
 
-//extern char WebSocketKey[];
-
 volatile unsigned int i2c_byte_count;
 volatile unsigned int i2c_reg_addr;
 volatile unsigned char i2c_reg_map[255];       //TODO: make this as small as possible
